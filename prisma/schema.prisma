@@ -1,0 +1,239 @@
+// 创业者手札 — 数据模型 (MVP, SQLite)
+// 注意: SQLite 下 Prisma 不支持 enum / 原生 Json，枚举字段用 String 承载，
+// tags / sourceRefs 等用 String 存 JSON。上线切 Postgres 时可收紧为 enum/jsonb。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  nickname      String?
+  role          String   @default("user") // user | admin
+  emailVerified Boolean  @default(false)
+  gender        String?
+  age           Int?
+  stage         String? // 创业阶段
+  background    String? // 经历/背景描述（作为 AI 上下文）
+  onboarded     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model EmailToken {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String // verify | reset
+  token     String // 6 位验证码
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, type])
+}
+
+model Question {
+  id          String  @id @default(cuid())
+  dimension   String
+  orderNo     Int
+  text        String
+  placeholder String?
+  active      Boolean @default(true)
+
+  @@index([orderNo])
+}
+
+model Assessment {
+  id          String    @id @default(cuid())
+  userId      String
+  status      String    @default("in_progress") // in_progress | completed
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@index([userId])
+}
+
+model AssessmentAnswer {
+  id           String @id @default(cuid())
+  assessmentId String
+  questionId   String
+  answerText   String
+
+  @@index([assessmentId])
+}
+
+model Profile {
+  id           String   @id @default(cuid())
+  userId       String
+  assessmentId String
+  contentMd    String
+  model        String
+  promptVer    Int      @default(1)
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Goal {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  detail    String?
+  status    String   @default("active") // active | done | dropped
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Record {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String?
+  type      String   @default("note") // note | decision | pitfall | comm
+  content   String
+  mood      String?
+  tags      String? // JSON string[]
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  userId      String
+  periodType  String // day | week | month | project
+  periodStart DateTime
+  periodEnd   DateTime
+  content     String
+  aiSummary   String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Insight {
+  id         String   @id @default(cuid())
+  userId     String
+  type       String // pattern | conflict | summary | idea_cluster
+  content    String
+  sourceRefs String? // JSON
+  status     String   @default("unread") // unread | read
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+}
+
+model InspirationPrompt {
+  id       String  @id @default(cuid())
+  category String // pain | delight | repeat | envy ...
+  text     String
+  active   Boolean @default(true)
+}
+
+model Inspiration {
+  id        String   @id @default(cuid())
+  userId    String
+  promptId  String?
+  rawText   String
+  source    String   @default("manual") // prompt | manual
+  aiAngle   String? // AI 挖掘的灵感卡内容
+  fitLevel  String? // high | mid | low
+  status    String   @default("new") // new | incubating | converted | archived
+  projectId String?
+  tags      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Method {
+  id        String   @id @default(cuid())
+  category  String
+  title     String
+  framework String
+  xinfa     String
+  caseText  String
+  howToUse  String
+  exercise  String? // 配套练习的题面/引导
+  tags      String?
+  status    String   @default("published") // draft | published
+  orderNo   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MethodExercise {
+  id         String   @id @default(cuid())
+  userId     String
+  methodId   String
+  response   String // 用户的练习作答
+  aiFeedback String? // AI 反馈
+  createdAt  DateTime @default(now())
+
+  @@index([userId, methodId])
+}
+
+model MethodFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  methodId  String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Prompt {
+  id          String   @id @default(cuid())
+  key         String // profile_report | review_assist | insight | inspiration_mine | idea_cluster
+  version     Int      @default(1)
+  content     String
+  model       String   @default("deepseek-chat")
+  temperature Float    @default(0.75)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@unique([key, version])
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model AiLog {
+  id               String   @id @default(cuid())
+  userId           String?
+  type             String
+  model            String
+  input            String? // 发给 AI 的用户侧内容
+  output           String? // AI 生成的内容
+  error            String? // 失败时的错误
+  ok               Boolean  @default(true)
+  promptTokens     Int?
+  completionTokens Int?
+  costEst          Float?
+  createdAt        DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
