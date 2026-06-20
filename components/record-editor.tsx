@@ -102,8 +102,8 @@ export function RecordEditor() {
           />
         </div>
 
-        {/* 心情 + 保存 */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.4rem", gap: "1rem", flexWrap: "wrap" }}>
+        {/* 心情 + 保存（居中） */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.1rem", marginTop: "1.5rem" }}>
           <div style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
             <span style={{ fontSize: ".74rem", color: "var(--muted)", fontWeight: 700 }}>心情</span>
             {MOOD_LEVELS.map((lv) => {
@@ -117,8 +117,8 @@ export function RecordEditor() {
               );
             })}
           </div>
+          {err && <span style={{ color: "var(--danger)", fontSize: ".85rem" }}>{err}</span>}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            {err && <span style={{ color: "var(--danger)", fontSize: ".85rem" }}>{err}</span>}
             <button className="btn" onClick={() => router.push("/records")}>取消</button>
             <button className="btn btn-pri" onClick={save} disabled={loading || !content.trim()}>{loading ? "保存中…" : "保存"}</button>
           </div>

@@ -52,7 +52,7 @@ export function GoalsBoard({ goals }: { goals: Goal[] }) {
           rows={2}
           style={{ resize: "vertical", lineHeight: 1.6 }}
         />
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: ".9rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: ".5rem", marginTop: "1.1rem" }}>
           <button className="btn btn-pri" onClick={add} disabled={loading || !title.trim()}>{loading ? "添加中…" : "添加目标"}</button>
           {err && <span style={{ color: "var(--danger)", fontSize: ".85rem" }}>{err}</span>}
         </div>

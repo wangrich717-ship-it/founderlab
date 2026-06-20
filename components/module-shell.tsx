@@ -25,8 +25,8 @@ export function ModuleShell({
     <div>
       <AppNav />
       <main style={{ maxWidth, margin: "0 auto", padding: "2rem 1.5rem 5rem" }}>
-        <header className="reveal" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: ".9rem" }}>
+        <header className="reveal" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: ".8rem" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: ".9rem", minWidth: 0 }}>
             <Link
               href={back}
               aria-label="返回"
@@ -34,7 +34,7 @@ export function ModuleShell({
             >
               <IconArrowLeft size={18} />
             </Link>
-            <div>
+            <div style={{ minWidth: 0 }}>
               <p className="kicker">{en}</p>
               <h1 className="font-serif-d" style={{ fontSize: "clamp(2rem,4.5vw,2.7rem)", fontWeight: 700, margin: ".3rem 0 .35rem" }}>
                 {title}
@@ -42,7 +42,7 @@ export function ModuleShell({
               <p style={{ color: "var(--ink2)", fontSize: "1rem", maxWidth: 540 }}>{desc}</p>
             </div>
           </div>
-          {action}
+          {action && <div style={{ flexShrink: 0 }}>{action}</div>}
         </header>
         <hr className="rule" style={{ margin: "1.5rem 0 2rem" }} />
         {children}

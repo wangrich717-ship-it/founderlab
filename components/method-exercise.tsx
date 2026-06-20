@@ -44,7 +44,7 @@ export function MethodExercise({ methodId, exercise, past }: { methodId: string;
           className="field-input"
           style={{ lineHeight: 1.75, resize: "vertical" }}
         />
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: ".5rem", marginTop: "1.2rem" }}>
           <button className="btn btn-pri" onClick={submit} disabled={loading || !response.trim()}>
             {loading ? "AI 反馈生成中…" : "获取 AI 反馈"}
           </button>

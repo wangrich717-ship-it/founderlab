@@ -75,7 +75,7 @@ export function InspirationComposer({
           paddingBottom: ".5rem",
         }}
       />
-      <div style={{ display: "flex", alignItems: "center", gap: ".75rem", marginTop: "1rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: ".5rem", marginTop: "1.2rem" }}>
         <button className="btn btn-pri" onClick={submit} disabled={loading || !rawText.trim()}>
           {loading ? "挖掘中…" : "挖掘灵感 →"}
         </button>
