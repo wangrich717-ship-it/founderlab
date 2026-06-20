@@ -66,7 +66,7 @@ export function AssessmentFlow({ questions }: { questions: Q[] }) {
           {total} 个问题，<br />一次诚实的自我审视
         </h1>
         <p className="font-serif-d" style={{ fontStyle: "italic", color: "var(--txt2)", maxWidth: 460, lineHeight: 1.9, marginBottom: "2.5rem" }}>
-          覆盖动机、优势、价值观、决策风格、协作与能量六个维度。
+          覆盖动机、经历、专业、优势、价值观、决策、资源、协作与能量等维度。
           答完后 AI 会为你生成专属的「创业者画像」。
         </p>
         <div style={{ display: "flex", gap: "1rem" }}>

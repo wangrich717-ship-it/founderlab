@@ -8,7 +8,7 @@ type Mode = "login" | "register";
 type Screen = "form" | "verify";
 
 const NOTES = [
-  { tag: "测评", title: "找到你的方向", desc: "18 题深问，AI 生成你的创业者画像。", bg: "rgba(247,230,205,.5)", span: 1 },
+  { tag: "测评", title: "找到你的方向", desc: "30 题深问，AI 生成你的创业者画像。", bg: "rgba(247,230,205,.5)", span: 1 },
   { tag: "记录 · 复盘", title: "持续积累", desc: "随手记下想法与决策，周期性复盘。", bg: "rgba(220,238,224,.5)", span: 1 },
   { tag: "灵感 · 洞察", title: "看见机会", desc: "从生活小问挖灵感，AI 替你连点成线。", bg: "rgba(231,225,244,.5)", span: 2 },
 ];

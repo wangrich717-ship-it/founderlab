@@ -97,7 +97,7 @@ export default async function Dashboard({
                 自我测评
               </h2>
               <p style={{ color: "rgba(246,234,212,.78)", fontSize: ".98rem", lineHeight: 1.7, maxWidth: 380 }}>
-                固定 18 题，六个维度，一次诚实的自我审视。AI 据此为你生成专属的「创业者画像」——后续记录、复盘、洞察的底座。
+                30 道深问，九个维度，一次诚实的自我审视。AI 据此为你生成专属的「创业者画像」——后续记录、复盘、洞察的底座。
               </p>
             </div>
             <span

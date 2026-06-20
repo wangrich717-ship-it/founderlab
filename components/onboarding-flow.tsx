@@ -4,7 +4,7 @@ import { useState } from "react";
 import { IconCompass, IconPen, IconBulb, IconSpark, IconBook, IconArrowRight } from "./icons";
 
 const FEATURES = [
-  { ic: <IconCompass size={18} />, t: "自我测评", d: "回答 18 题，AI 生成你的「创业者画像」。", bg: "rgba(247,230,205,.6)" },
+  { ic: <IconCompass size={18} />, t: "自我测评", d: "回答 30 题，AI 生成你的「创业者画像」。", bg: "rgba(247,230,205,.6)" },
   { ic: <IconPen size={18} />, t: "记录", d: "随手记下想法、决策、踩坑与复盘。", bg: "rgba(220,238,224,.6)" },
   { ic: <IconBook size={18} />, t: "目标", d: "定下方向与关键赌注。", bg: "rgba(231,225,244,.6)" },
   { ic: <IconBulb size={18} />, t: "洞察", d: "AI 结合一切，给你整体盘点。", bg: "rgba(219,232,244,.6)" },
