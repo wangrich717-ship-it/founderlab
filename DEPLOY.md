@@ -38,7 +38,8 @@ git add -A && git commit -m "ready for deploy" && git push
 
    | 变量 | 值 |
    |---|---|
-   | `DATABASE_URL` | Neon 的 **Pooled** 连接串 |
+   | `DATABASE_URL` | Neon **带 `-pooler`** 的连接串（运行时连接池） |
+   | `DIRECT_URL` | Neon **不带 `-pooler`** 的连接串（迁移用） |
    | `JWT_SECRET` | 一段长随机串（`openssl rand -hex 32`） |
    | `DEEPSEEK_API_KEY` | 你的 DeepSeek key |
    | `DEEPSEEK_BASE_URL` | `https://api.deepseek.com/v1` |

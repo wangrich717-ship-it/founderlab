@@ -7,8 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // 运行时：Neon 的 pooled 连接（带 -pooler）
+  directUrl = env("DIRECT_URL") // 迁移/建表：Neon 的直连（不带 -pooler）
 }
 
 model User {
