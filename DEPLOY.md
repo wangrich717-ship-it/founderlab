@@ -12,17 +12,11 @@
 2. 进入 **Connection string**，复制**带 `-pooler` 的「Pooled connection」**那一条（serverless 用连接池更稳），形如：
    `postgresql://user:pass@ep-xxx-pooler.region.aws.neon.tech/neondb?sslmode=require`
 
-## 二、初始化数据库（在你本地做一次）
+## 二、初始化数据库（部署时自动完成，无需本地操作）
 
-把这个连接串填到本地 `.env` 的 `DATABASE_URL`，然后在 `founder-app` 目录运行：
-
-```bash
-npx prisma db push      # 在 Neon 里建好所有表
-npm run seed            # 灌入测评题/方法卡/灵感小问/AI 提示词
-npm run make-admin 你的邮箱   # 把自己设为管理员（注册后也可，见下）
-```
-
-> 之后本地开发也用这个 Neon 连接串（SQLite 已退役）。
+国内网络通常连不上 Neon 的 5432 端口，所以**不在本地建表**。已配好 `vercel-build` 脚本：
+Vercel 部署时会自动 `prisma db push`（建表）+ seed（灌入题库/方法卡/灵感/提示词），
+这些跑在 Vercel 的海外网络里，能正常连到 Neon。你本地什么都不用跑。
 
 ## 三、推到 GitHub
 
@@ -52,7 +46,10 @@ git add -A && git commit -m "ready for deploy" && git push
 ## 五、收尾
 
 1. 部署成功后拿到域名（如 `https://founderlab.vercel.app`），把 `APP_URL` 改成它，**Redeploy** 一次。
-2. 打开域名注册账号；若要进后台，本地 `npm run make-admin 你的邮箱`，再到 `/admin`。
+2. 打开域名**注册一个账号**。
+3. 把自己设为管理员：去 Neon 控制台的 **SQL Editor**（浏览器里，走 HTTPS，不受 5432 限制），执行：
+   `UPDATE "User" SET role='admin', "emailVerified"=true WHERE email='你注册的邮箱';`
+   然后访问 `/admin`。
 
 ---
 
