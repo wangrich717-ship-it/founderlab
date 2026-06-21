@@ -1,8 +1,15 @@
 import Link from "next/link";
-import { LogoutButton } from "./logout-button";
+import { getCurrentUser } from "@/lib/auth";
 import { UserMenu } from "./user-menu";
 
-export function AppNav({ nickname }: { nickname?: string | null }) {
+export async function AppNav({ nickname }: { nickname?: string | null }) {
+  let name = nickname;
+  if (name === undefined || name === null) {
+    const u = await getCurrentUser();
+    name = u?.nickname || null;
+  }
+  const display = name || "我的账户";
+
   return (
     <nav
       style={{
@@ -17,10 +24,7 @@ export function AppNav({ nickname }: { nickname?: string | null }) {
       <Link href="/dashboard" className="kicker" style={{ textDecoration: "none" }}>
         FOUNDER LAB · 创业者手札
       </Link>
-      <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-        {nickname && <UserMenu nickname={nickname} />}
-        <LogoutButton />
-      </div>
+      <UserMenu nickname={display} />
     </nav>
   );
 }

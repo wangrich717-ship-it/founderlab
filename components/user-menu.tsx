@@ -16,6 +16,11 @@ export function UserMenu({ nickname }: { nickname: string }) {
     return () => document.removeEventListener("mousedown", onClick);
   }, [open]);
 
+  async function logout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    window.location.href = "/";
+  }
+
   return (
     <div ref={ref} style={{ position: "relative" }}>
       <button
@@ -29,6 +34,13 @@ export function UserMenu({ nickname }: { nickname: string }) {
         <div className="card" style={{ position: "absolute", right: 0, top: "calc(100% + .5rem)", minWidth: 150, padding: ".4rem", zIndex: 50, boxShadow: "0 12px 32px rgba(32,32,29,.14)" }}>
           <MenuItem href="/me" label="个人中心" onClick={() => setOpen(false)} />
           <MenuItem href="/reset" label="修改密码" onClick={() => setOpen(false)} />
+          <div style={{ height: 1, background: "var(--line)", margin: ".35rem .4rem" }} />
+          <button
+            onClick={logout}
+            style={{ display: "block", width: "100%", textAlign: "left", padding: ".55rem .8rem", borderRadius: 8, border: "none", background: "none", cursor: "pointer", color: "var(--muted)", fontWeight: 700, fontSize: ".88rem" }}
+          >
+            退出登录
+          </button>
         </div>
       )}
     </div>
