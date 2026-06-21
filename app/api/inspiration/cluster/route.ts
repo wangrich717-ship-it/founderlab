@@ -4,7 +4,7 @@ import { getSession } from "@/lib/auth";
 import { callAI, getActivePrompt, AINotConfiguredError } from "@/lib/ai";
 import { getAiAccess, NO_AI_ACCESS_MESSAGE } from "@/lib/ai-access";
 import { IDEA_CLUSTER_PROMPT } from "@/lib/prompts-default";
-import { latestProfile, profileBlock } from "@/lib/context";
+import { latestProfile, profileBlock, nowBlock, fmtDate } from "@/lib/context";
 
 export const maxDuration = 60;
 
@@ -32,9 +32,10 @@ export async function POST() {
   const profile = await latestProfile(session.uid);
   const cfg = await getActivePrompt("idea_cluster", IDEA_CLUSTER_PROMPT);
   const userMsg =
+    nowBlock() +
     profileBlock(profile?.contentMd) +
     `【他积累的灵感（越靠前越新）】\n` +
-    inspirations.map((i, n) => `${n + 1}. ${i.rawText}`).join("\n");
+    inspirations.map((i, n) => `${n + 1}. [${fmtDate(i.createdAt)}] ${i.rawText}`).join("\n");
 
   let content: string;
   try {

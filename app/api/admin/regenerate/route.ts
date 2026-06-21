@@ -9,7 +9,7 @@ import {
   INSIGHT_PROMPT,
   IDEA_CLUSTER_PROMPT,
 } from "@/lib/prompts-default";
-import { latestProfile, profileBlock, userInfoBlock } from "@/lib/context";
+import { latestProfile, profileBlock, userInfoBlock, nowBlock } from "@/lib/context";
 
 const schema = z.object({ kind: z.enum(["inspiration", "exercise", "insight"]), id: z.string() });
 
@@ -45,6 +45,7 @@ export async function POST(req: Request) {
         questionText = p?.text ?? "";
       }
       input =
+        nowBlock() +
         userInfoBlock(user) +
         profileBlock(profile?.contentMd) +
         (questionText ? `【小问题】${questionText}\n` : "") +
@@ -61,6 +62,7 @@ export async function POST(req: Request) {
         prisma.method.findUnique({ where: { id: e.methodId } }),
       ]);
       input =
+        nowBlock() +
         userInfoBlock(user) +
         profileBlock(profile?.contentMd) +
         `【方法】${method?.title ?? ""}\n框架：${method?.framework ?? ""}\n心法：${method?.xinfa ?? ""}\n怎么用：${method?.howToUse ?? ""}\n\n` +

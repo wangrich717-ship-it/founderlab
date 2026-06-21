@@ -4,7 +4,7 @@ import { getSession } from "@/lib/auth";
 import { callAI, getActivePrompt, AINotConfiguredError } from "@/lib/ai";
 import { getAiAccess, NO_AI_ACCESS_MESSAGE } from "@/lib/ai-access";
 import { INSIGHT_PROMPT } from "@/lib/prompts-default";
-import { latestProfile, profileBlock, recordsBlock, userInfoBlock } from "@/lib/context";
+import { latestProfile, profileBlock, recordsBlock, userInfoBlock, nowBlock, fmtTime, fmtDate } from "@/lib/context";
 
 export const maxDuration = 60;
 
@@ -70,22 +70,26 @@ export async function POST() {
 
   // 拼上下文
   const user = await prisma.user.findUnique({ where: { id: uid } });
-  let msg = userInfoBlock(user);
+  let msg = nowBlock();
+  msg += userInfoBlock(user);
   if (baseProfile) msg += profileBlock(baseProfile.contentMd);
-  if (lastInsight) msg += `【上一次的洞察盘点】\n${lastInsight.content}\n\n`;
+  if (lastInsight) msg += `【上一次的洞察盘点】（生成于 ${fmtTime(lastInsight.createdAt)}）\n${lastInsight.content}\n\n`;
+
+  // 本次盘点覆盖的时间范围
+  msg += `【本次盘点范围】${cutoff ? `${fmtTime(cutoff)} 之后` : "全部历史（首次盘点）"} 至今的新动态\n\n`;
 
   msg += "【当前目标】\n";
   msg += activeGoals.length
-    ? activeGoals.map((g) => `- ${g.title}${g.detail ? `（${g.detail}）` : ""}`).join("\n") + "\n\n"
+    ? activeGoals.map((g) => `- ${g.title}${g.detail ? `（${g.detail}）` : ""}（设于 ${fmtDate(g.createdAt)}）`).join("\n") + "\n\n"
     : "（暂未设定目标）\n\n";
 
   msg += `【这段时间的新记录】\n${recordsBlock(newRecords)}\n\n`;
 
   if (newInspirations.length) {
-    msg += "【新的灵感】\n" + newInspirations.map((i) => `- ${i.rawText}`).join("\n") + "\n\n";
+    msg += "【新的灵感】\n" + newInspirations.map((i) => `- [${fmtTime(i.createdAt)}] ${i.rawText}`).join("\n") + "\n\n";
   }
   if (newExercises.length) {
-    msg += "【新的方法练习】\n" + newExercises.map((e) => `- [${mTitle.get(e.methodId) || "练习"}] ${e.response}`).join("\n") + "\n\n";
+    msg += "【新的方法练习】\n" + newExercises.map((e) => `- [${fmtTime(e.createdAt)}·${mTitle.get(e.methodId) || "练习"}] ${e.response}`).join("\n") + "\n\n";
   }
 
   const cfg = await getActivePrompt("insight", INSIGHT_PROMPT);

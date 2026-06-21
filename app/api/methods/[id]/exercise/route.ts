@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth";
 import { callAI, getActivePrompt, AINotConfiguredError } from "@/lib/ai";
 import { getAiAccess, NO_AI_ACCESS_MESSAGE } from "@/lib/ai-access";
 import { METHOD_EXERCISE_PROMPT } from "@/lib/prompts-default";
-import { latestProfile, profileBlock, userInfoBlock } from "@/lib/context";
+import { latestProfile, profileBlock, userInfoBlock, nowBlock } from "@/lib/context";
 
 const schema = z.object({ response: z.string().trim().min(1, "先写下你的作答").max(4000) });
 
@@ -33,6 +33,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const user = await prisma.user.findUnique({ where: { id: session.uid } });
   const cfg = await getActivePrompt("method_exercise", METHOD_EXERCISE_PROMPT);
   const userMsg =
+    nowBlock() +
     userInfoBlock(user) +
     profileBlock(profile?.contentMd) +
     `【方法】${method.title}\n框架：${method.framework}\n心法：${method.xinfa}\n怎么用：${method.howToUse}\n\n` +

@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth";
 import { callAI, getActivePrompt, AINotConfiguredError } from "@/lib/ai";
 import { getAiAccess, NO_AI_ACCESS_MESSAGE } from "@/lib/ai-access";
 import { PROFILE_REPORT_PROMPT } from "@/lib/prompts-default";
-import { userInfoBlock } from "@/lib/context";
+import { userInfoBlock, nowBlock } from "@/lib/context";
 
 const schema = z.object({
   answers: z
@@ -54,7 +54,8 @@ export async function POST(req: Request) {
 
   // 拼用户侧 prompt（按维度分组）
   const user = await prisma.user.findUnique({ where: { id: session.uid } });
-  let userMsg = userInfoBlock(user);
+  let userMsg = nowBlock();
+  userMsg += userInfoBlock(user);
   if (info && (info.gender || info.age || info.extra)) {
     userMsg += "【个人基本信息】\n";
     if (info.gender) userMsg += `性别：${info.gender}\n`;

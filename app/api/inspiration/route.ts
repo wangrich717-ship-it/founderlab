@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth";
 import { callAI, getActivePrompt, AINotConfiguredError } from "@/lib/ai";
 import { getAiAccess, NO_AI_ACCESS_MESSAGE } from "@/lib/ai-access";
 import { INSPIRATION_MINE_PROMPT } from "@/lib/prompts-default";
-import { latestProfile, profileBlock, userInfoBlock } from "@/lib/context";
+import { latestProfile, profileBlock, userInfoBlock, nowBlock } from "@/lib/context";
 
 const schema = z.object({
   promptId: z.string().optional(),
@@ -41,6 +41,7 @@ export async function POST(req: Request) {
   const user = await prisma.user.findUnique({ where: { id: session.uid } });
   const cfg = await getActivePrompt("inspiration_mine", INSPIRATION_MINE_PROMPT);
   const userMsg =
+    nowBlock() +
     userInfoBlock(user) +
     profileBlock(profile?.contentMd) +
     (questionText ? `【小问题】${questionText}\n` : "") +
