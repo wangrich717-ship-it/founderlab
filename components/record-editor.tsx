@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { RECORD_TYPES, MOOD_LEVELS } from "@/lib/labels";
-import { MoodFace } from "./icons";
 
 const REVIEW_TEMPLATE = "做成了什么：\n\n没做成什么：\n\n学到了什么：\n\n下一步：\n";
 
-// 记录格式模板
+// 记录格式模板（type 仅作为 AI 分析前的初始值，保存后由 AI 自动归类）
 const TEMPLATES: { label: string; type: string; text: string }[] = [
   { label: "人物·事件", type: "comm", text: "时间：\n人物：\n发生了什么：\n我的想法：\n情绪 / 认知：\n" },
   { label: "一次决策", type: "decision", text: "要决定的事：\n可选项：\n我的选择：\n理由：\n" },
@@ -20,7 +18,6 @@ export function RecordEditor() {
   const router = useRouter();
   const [type, setType] = useState("note");
   const [content, setContent] = useState("");
-  const [mood, setMood] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
@@ -34,7 +31,7 @@ export function RecordEditor() {
     const res = await fetch("/api/records", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, content, mood: mood || undefined }),
+      body: JSON.stringify({ type, content }),
     });
     const d = await res.json().catch(() => ({}));
     setLoading(false);
@@ -58,7 +55,7 @@ export function RecordEditor() {
         overflow: "hidden",
       }}
     >
-      {/* 页眉：日期戳 + 类型 */}
+      {/* 页眉：日期戳 */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.2rem 1.6rem .9rem", borderBottom: "1px solid var(--line)" }}>
         <span className="hand" style={{ fontSize: "1.5rem", color: "var(--rose-deep)" }}>{stamp}</span>
         <span style={{ fontSize: ".72rem", color: "var(--muted)", fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" }}>My Journal</span>
@@ -66,38 +63,13 @@ export function RecordEditor() {
 
       <div style={{ padding: "1.3rem 1.6rem 1.6rem" }}>
         {/* 套用格式模板 */}
-        <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap", alignItems: "center", marginBottom: "1rem" }}>
+        <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap", alignItems: "center", marginBottom: "1.1rem" }}>
           <span style={{ fontSize: ".72rem", color: "var(--muted)", fontWeight: 700 }}>模板</span>
           {TEMPLATES.map((t) => (
             <button
               key={t.label}
               onClick={() => applyTemplate(t)}
               style={{ padding: ".28rem .8rem", borderRadius: 999, border: "1px dashed var(--line)", background: "transparent", color: "var(--ink2)", fontWeight: 700, fontSize: ".78rem", cursor: "pointer" }}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap", marginBottom: "1.1rem" }}>
-          {RECORD_TYPES.map((t) => (
-            <button
-              key={t.value}
-              onClick={() => {
-                setType(t.value);
-                if (t.value === "review" && !content.trim()) setContent(REVIEW_TEMPLATE);
-              }}
-              style={{
-                padding: ".32rem .9rem",
-                borderRadius: 999,
-                border: "1.5px solid",
-                borderColor: type === t.value ? "var(--rose)" : "var(--line)",
-                background: type === t.value ? "var(--rose-soft)" : "transparent",
-                color: type === t.value ? "var(--rose-deep)" : "var(--ink2)",
-                fontWeight: 700,
-                fontSize: ".82rem",
-                cursor: "pointer",
-              }}
             >
               {t.label}
             </button>
@@ -130,21 +102,9 @@ export function RecordEditor() {
           />
         </div>
 
-        {/* 心情 + 保存（居中） */}
+        {/* 保存（居中）。分类与情绪由 AI 保存后自动分析 */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.1rem", marginTop: "1.5rem" }}>
-          <div style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
-            <span style={{ fontSize: ".74rem", color: "var(--muted)", fontWeight: 700 }}>心情</span>
-            {MOOD_LEVELS.map((lv) => {
-              const v = String(lv);
-              const active = mood === v;
-              return (
-                <button key={lv} onClick={() => setMood(active ? "" : v)} title={`心情 ${lv + 1}`}
-                  style={{ display: "flex", background: "none", border: "none", cursor: "pointer", padding: 2, color: active ? "var(--rose)" : "var(--muted)", opacity: active ? 1 : 0.5 }}>
-                  <MoodFace level={lv} size={24} />
-                </button>
-              );
-            })}
-          </div>
+          <span style={{ fontSize: ".74rem", color: "var(--muted)" }}>保存后 AI 会自动归类并提取关键词</span>
           {err && <span style={{ color: "var(--danger)", fontSize: ".85rem" }}>{err}</span>}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <button className="btn" onClick={() => router.push("/dashboard")}>取消</button>
