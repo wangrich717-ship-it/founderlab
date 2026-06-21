@@ -2,6 +2,7 @@ import { NextResponse, after } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { getAiAccess } from "@/lib/ai-access";
 import { tagRecord } from "@/lib/record-tag";
 
 const schema = z.object({
@@ -36,8 +37,11 @@ export async function POST(req: Request) {
     },
   });
 
-  // 记录自动归类 + 提取关键词（核心能力，对所有用户开放；不阻塞保存响应）
-  after(() => tagRecord(rec.id));
+  // 记录自动归类 + 提取关键词：仅在有 AI 权限时跑；无权限则保持「待处理」，
+  // 待用户开通权限后由 process-pending 兜底补跑（不阻塞保存响应）。
+  if ((await getAiAccess(session.uid)).allowed) {
+    after(() => tagRecord(rec.id));
+  }
 
   return NextResponse.json({ ok: true, id: rec.id });
 }

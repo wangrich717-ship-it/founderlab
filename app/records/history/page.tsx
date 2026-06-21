@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
+import { getAiAccess } from "@/lib/ai-access";
 import { prisma } from "@/lib/prisma";
 import { recordTypeLabel } from "@/lib/labels";
 import { ModuleShell } from "@/components/module-shell";
@@ -52,6 +53,7 @@ export default async function RecordsHistoryPage({ searchParams }: { searchParam
   }
 
   const records = await prisma.record.findMany({ where, orderBy: { createdAt: "desc" }, take: 300 });
+  const aiAllowed = (await getAiAccess(session.uid)).allowed;
 
   return (
     <ModuleShell
@@ -62,7 +64,7 @@ export default async function RecordsHistoryPage({ searchParams }: { searchParam
       back="/records"
       action={<Link href="/records" className="btn btn-pri">+ 写记录</Link>}
     >
-      <ProcessPending hasPending={records.some((r) => !r.aiProcessed)} />
+      <ProcessPending hasPending={aiAllowed && records.some((r) => !r.aiProcessed)} />
       <RecordFilter type={type} date={date} />
 
       {records.length === 0 ? (
@@ -121,7 +123,11 @@ export default async function RecordsHistoryPage({ searchParams }: { searchParam
                     <div style={{ marginTop: ".9rem", display: "flex", alignItems: "center", gap: ".4rem", color: "var(--ink2)", opacity: 0.7 }}>
                       <IconClip size={14} />
                       <span style={{ fontSize: ".74rem", fontWeight: 700 }}>{recordTypeLabel(r.type)}</span>
-                      {!r.aiProcessed && <span style={{ fontSize: ".68rem", color: "var(--muted)" }}>· AI 待处理</span>}
+                      {!r.aiProcessed && (
+                        <span style={{ fontSize: ".68rem", color: "var(--muted)" }}>
+                          {aiAllowed ? "· AI 处理中…" : "· AI 待处理 · 请先开通 AI 权限"}
+                        </span>
+                      )}
                     </div>
                   </div>
 
