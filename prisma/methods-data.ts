@@ -174,9 +174,9 @@ export const METHODS: MethodSeed[] = [
     tags: "冷启动,用户",
   },
 
-  // ── 自我管理 ──
+  // ── 自我精进 ──
   {
-    category: "自我管理",
+    category: "自我精进",
     title: "精力管理优先于时间管理",
     framework: "把高价值的事放在你精力峰值的时段；要管理的是精力曲线，而不是日程表上的格子。",
     xinfa: "不是没时间，是把好状态浪费在了垃圾事务上。",
@@ -187,7 +187,7 @@ export const METHODS: MethodSeed[] = [
     tags: "效率,精力",
   },
   {
-    category: "自我管理",
+    category: "自我精进",
     title: "决策日志",
     framework: "重大决策时写下：我决定了什么、依据是什么、我在赌什么、最坏结果、何时复盘。",
     xinfa: "不写下来，你只会记得自己「一直都对」。",
@@ -198,7 +198,7 @@ export const METHODS: MethodSeed[] = [
     tags: "决策,复盘",
   },
   {
-    category: "自我管理",
+    category: "自我精进",
     title: "课题分离",
     framework: "分清「这是谁的课题」——后果由谁承担，就是谁的课题。别替别人的课题焦虑。",
     xinfa: "你无法控制别人怎么看你，那是别人的课题。",
@@ -209,7 +209,7 @@ export const METHODS: MethodSeed[] = [
     tags: "心态,边界",
   },
   {
-    category: "自我管理",
+    category: "自我精进",
     title: "二八法则",
     framework: "约 80% 的结果来自 20% 的关键投入；找到那 20%，砍掉大部分低价值忙碌。",
     xinfa: "忙不等于有效，多数努力是噪音。",
@@ -220,7 +220,7 @@ export const METHODS: MethodSeed[] = [
     tags: "效率,专注",
   },
   {
-    category: "自我管理",
+    category: "自我精进",
     title: "深度工作",
     framework: "把需要高度专注的创造性工作，安排成无干扰的整块时间，远离消息与多任务。",
     xinfa: "浅层忙碌人人会，深度工作才稀缺、才创造价值。",
@@ -529,9 +529,9 @@ export const METHODS: MethodSeed[] = [
     tags: "决策,理性",
   },
 
-  // ── 管理 ──
+  // ── 团队管理 ──
   {
-    category: "管理",
+    category: "团队管理",
     title: "OKR 目标管理",
     framework: "用「目标（O，鼓舞人心的方向）+ 关键结果（KR，可量化的衡量）」对齐全队。目标定性、激动人心；关键结果定量、能验证是否达成。",
     xinfa: "目标管方向，关键结果管「凭什么算达成」。",
@@ -542,7 +542,7 @@ export const METHODS: MethodSeed[] = [
     tags: "管理,目标",
   },
   {
-    category: "管理",
+    category: "团队管理",
     title: "高杠杆管理",
     framework: "管理者的产出 = 他所辖团队产出之和。所以要把时间投到「高杠杆活动」——一个动作能影响很多人产出的事，如培训、建流程、定方向。",
     xinfa: "经理的成绩，是团队的成绩，不是你自己埋头干了多少。",
@@ -553,7 +553,7 @@ export const METHODS: MethodSeed[] = [
     tags: "管理,效率",
   },
   {
-    category: "管理",
+    category: "团队管理",
     title: "绝对坦率",
     framework: "好反馈要同时做到：个人关心（真在乎对方）+ 直接挑战（敢当面指出问题）。两者都高才是绝对坦率；只关心不挑战是「滥好人」，只挑战不关心是「令人讨厌」。",
     xinfa: "因为在乎你，所以才直说。",
@@ -564,7 +564,7 @@ export const METHODS: MethodSeed[] = [
     tags: "管理,反馈",
   },
   {
-    category: "管理",
+    category: "团队管理",
     title: "GROW 教练模型",
     framework: "带人不靠给答案，靠提问引导四步：目标（Goal）→现状（Reality）→选择（Options）→意愿（Will）。让对方自己想清楚、自己承诺行动。",
     xinfa: "给答案养出依赖，问对问题养出能力。",
@@ -575,7 +575,7 @@ export const METHODS: MethodSeed[] = [
     tags: "管理,带人",
   },
   {
-    category: "管理",
+    category: "团队管理",
     title: "塔克曼团队四阶段",
     framework: "团队成长会经历四阶段：组建期（客气试探）→震荡期（冲突摩擦）→规范期（磨合出规则）→成熟期（高效协作）。震荡是必经，不是出了问题。",
     xinfa: "团队的吵架期不是病，是发育。",

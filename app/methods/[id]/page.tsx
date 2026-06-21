@@ -41,11 +41,11 @@ export default async function MethodDetail({ params }: { params: Promise<{ id: s
           {m.sources && (
             <div style={{ marginTop: "1.4rem", borderTop: "1px solid var(--line)", paddingTop: "1.1rem" }}>
               <p style={{ fontWeight: 800, color: "var(--muted)", fontSize: ".68rem", letterSpacing: ".1em", textTransform: "uppercase", marginBottom: ".5rem" }}>参考来源</p>
-              <ul style={{ margin: 0, paddingLeft: "1.1rem", display: "flex", flexDirection: "column", gap: ".25rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: ".3rem" }}>
                 {m.sources.split("\n").filter((s) => s.trim()).map((s, i) => (
-                  <li key={i} style={{ fontSize: ".88rem", color: "var(--ink2)", lineHeight: 1.6 }}>{s}</li>
+                  <p key={i} style={{ margin: 0, fontSize: ".88rem", color: "var(--ink2)", lineHeight: 1.6 }}>{s}</p>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
         </article>

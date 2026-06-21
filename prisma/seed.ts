@@ -51,6 +51,10 @@ async function main() {
     await prisma.method.createMany({ data: METHODS.map((m, i) => ({ ...m, orderNo: i })) });
     console.log(`✓ 方法卡 ${METHODS.length} 条`);
   } else {
+    // 分类更名迁移（幂等）：自我管理→自我精进、管理→团队管理
+    await prisma.method.updateMany({ where: { category: "自我管理" }, data: { category: "自我精进" } });
+    await prisma.method.updateMany({ where: { category: "管理" }, data: { category: "团队管理" } });
+
     // 已有方法卡：插入新增卡（按标题去重）+ 回填参考来源（仅在还没填时，不覆盖后台手改）
     let added = 0;
     let filled = 0;
