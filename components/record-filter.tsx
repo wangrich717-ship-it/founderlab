@@ -3,15 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { RECORD_TYPES } from "@/lib/labels";
 
-const RANGES = [
-  { value: "", label: "全部时间" },
-  { value: "7", label: "近 7 天" },
-  { value: "30", label: "近 30 天" },
-  { value: "90", label: "近 90 天" },
-  { value: "365", label: "近一年" },
-];
-
-export function RecordFilter({ type, range }: { type: string; range: string }) {
+export function RecordFilter({ type, date }: { type: string; date: string }) {
   const router = useRouter();
   const sp = useSearchParams();
 
@@ -50,16 +42,23 @@ export function RecordFilter({ type, range }: { type: string; range: string }) {
           );
         })}
       </div>
-      <select
-        value={range}
-        onChange={(e) => setParam("range", e.target.value)}
-        className="field-input"
-        style={{ width: "auto", padding: ".4rem .8rem", fontSize: ".82rem", fontWeight: 700 }}
-      >
-        {RANGES.map((r) => (
-          <option key={r.value} value={r.value}>{r.label}</option>
-        ))}
-      </select>
+      <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setParam("date", e.target.value)}
+          className="field-input"
+          style={{ width: "auto", padding: ".4rem .7rem", fontSize: ".82rem", fontWeight: 700 }}
+        />
+        {date && (
+          <button
+            onClick={() => setParam("date", "")}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--ink2)", fontSize: ".8rem", fontWeight: 700, textDecoration: "underline", textUnderlineOffset: 3 }}
+          >
+            清除
+          </button>
+        )}
+      </div>
     </div>
   );
 }

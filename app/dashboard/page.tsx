@@ -53,7 +53,7 @@ export default async function Dashboard({
         {/* ── 报头 ── */}
         <header className="reveal">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: ".5rem" }}>
-            <span className="kicker">创业者手札 · Founder&apos;s Almanac · 卷一</span>
+            <span className="kicker">创业者手札 · Founder&apos;s Almanac</span>
             <span style={{ fontFamily: "var(--fd)", fontSize: ".95rem", color: "var(--txt2)", letterSpacing: ".04em" }}>
               {dateline}
             </span>

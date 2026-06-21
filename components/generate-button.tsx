@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export function GenerateButton({
@@ -16,6 +16,12 @@ export function GenerateButton({
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
+  useEffect(() => {
+    if (!err) return;
+    const t = setTimeout(() => setErr(""), 5000);
+    return () => clearTimeout(t);
+  }, [err]);
+
   async function run() {
     setLoading(true);
     setErr("");
@@ -30,11 +36,31 @@ export function GenerateButton({
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: ".75rem", flexWrap: "wrap" }}>
+    <>
       <button className="btn btn-pri" onClick={run} disabled={loading}>
         {loading ? loadingLabel : label}
       </button>
-      {err && <span style={{ color: "var(--danger)", fontSize: ".82rem" }}>{err}</span>}
-    </div>
+      {err && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "1.5rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 300,
+            maxWidth: "90vw",
+            background: "var(--ink)",
+            color: "#fff",
+            padding: ".75rem 1.2rem",
+            borderRadius: 12,
+            fontSize: ".88rem",
+            lineHeight: 1.5,
+            boxShadow: "0 12px 32px rgba(32,32,29,.25)",
+          }}
+        >
+          {err}
+        </div>
+      )}
+    </>
   );
 }

@@ -26,16 +26,19 @@ const TYPE_BG: Record<string, string> = {
   review: "linear-gradient(180deg,#ebe5f6,#faf7ff)",
 };
 
-export default async function RecordsPage({ searchParams }: { searchParams: Promise<{ type?: string; range?: string }> }) {
+export default async function RecordsPage({ searchParams }: { searchParams: Promise<{ type?: string; date?: string }> }) {
   const session = await getSession();
   if (!session) redirect("/login");
   const sp = await searchParams;
   const type = sp.type || "";
-  const range = sp.range || "";
+  const date = sp.date && /^\d{4}-\d{2}-\d{2}$/.test(sp.date) ? sp.date : "";
 
-  const where: { userId: string; type?: string; createdAt?: { gte: Date } } = { userId: session.uid };
+  const where: { userId: string; type?: string; createdAt?: { gte: Date; lt: Date } } = { userId: session.uid };
   if (type) where.type = type;
-  if (range) where.createdAt = { gte: new Date(Date.now() - Number(range) * 86400000) };
+  if (date) {
+    const start = new Date(`${date}T00:00:00`);
+    where.createdAt = { gte: start, lt: new Date(start.getTime() + 86400000) };
+  }
 
   const records = await prisma.record.findMany({ where, orderBy: { createdAt: "desc" }, take: 300 });
 
@@ -47,11 +50,11 @@ export default async function RecordsPage({ searchParams }: { searchParams: Prom
       desc="你的创业手账。随手记下想法、决策、踩坑与复盘。"
       action={<Link href="/records/new" className="btn btn-pri">+ 新增记录</Link>}
     >
-      <RecordFilter type={type} range={range} />
+      <RecordFilter type={type} date={date} />
 
       {records.length === 0 ? (
         <div className="card" style={{ padding: "2rem", textAlign: "center", color: "var(--ink2)" }}>
-          {type || range ? "这个筛选下还没有记录。" : <>还没有记录。<Link href="/records/new" style={{ color: "var(--rose-deep)", fontWeight: 800 }}>写第一条 →</Link></>}
+          {type || date ? "这个筛选下还没有记录。" : <>还没有记录。<Link href="/records/new" style={{ color: "var(--rose-deep)", fontWeight: 800 }}>写第一条 →</Link></>}
         </div>
       ) : (
         <div>

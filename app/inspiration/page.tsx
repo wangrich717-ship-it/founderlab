@@ -26,7 +26,7 @@ export default async function InspirationPage() {
       no="06"
       en="Inspiration"
       title="灵感"
-      desc="灵感藏在生活与玩里。回答一个小问题，AI 结合你的画像帮你挖出机会。"
+      desc="好点子常常藏在日常里。答一个小问题，AI 结合你的画像，帮你从中挖出机会。"
       action={<GenerateButton url="/api/inspiration/cluster" label="连点成线" loadingLabel="连接中…" />}
     >
       <InspirationComposer promptId={todays?.id ?? null} promptText={todays?.text ?? "此刻冒出什么灵感？"} />
