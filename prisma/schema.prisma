@@ -190,6 +190,7 @@ model Method {
   caseText  String
   howToUse  String
   exercise  String? // 配套练习的题面/引导
+  sources   String? // 参考来源/书目（每行一条）
   tags      String?
   status    String   @default("published") // draft | published
   orderNo   Int      @default(0)

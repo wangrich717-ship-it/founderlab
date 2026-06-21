@@ -50,6 +50,17 @@ async function main() {
   if ((await prisma.method.count()) === 0) {
     await prisma.method.createMany({ data: METHODS.map((m, i) => ({ ...m, orderNo: i })) });
     console.log(`✓ 方法卡 ${METHODS.length} 条`);
+  } else {
+    // 已有方法卡：按标题回填「参考来源」（仅在该卡还没填来源时，避免覆盖后台手改）
+    let filled = 0;
+    for (const m of METHODS) {
+      const r = await prisma.method.updateMany({
+        where: { title: m.title, OR: [{ sources: null }, { sources: "" }] },
+        data: { sources: m.sources },
+      });
+      filled += r.count;
+    }
+    if (filled) console.log(`✓ 回填方法卡参考来源 ${filled} 条`);
   }
 
   await syncPrompt("profile_report", PROFILE_REPORT_PROMPT);

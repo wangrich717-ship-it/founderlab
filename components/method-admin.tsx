@@ -6,17 +6,17 @@ import { Modal } from "./modal";
 
 type Method = {
   id: string; category: string; title: string; framework: string; xinfa: string;
-  caseText: string; howToUse: string; exercise: string | null; tags: string | null;
+  caseText: string; howToUse: string; exercise: string | null; sources: string | null; tags: string | null;
   status: string; orderNo: number;
 };
 
 type Form = {
   category: string; title: string; framework: string; xinfa: string;
-  caseText: string; howToUse: string; exercise: string; tags: string;
+  caseText: string; howToUse: string; exercise: string; sources: string; tags: string;
   status: string; orderNo: number;
 };
 
-const EMPTY: Form = { category: "", title: "", framework: "", xinfa: "", caseText: "", howToUse: "", exercise: "", tags: "", status: "published", orderNo: 0 };
+const EMPTY: Form = { category: "", title: "", framework: "", xinfa: "", caseText: "", howToUse: "", exercise: "", sources: "", tags: "", status: "published", orderNo: 0 };
 
 export function MethodAdmin({ list }: { list: Method[] }) {
   const router = useRouter();
@@ -31,7 +31,7 @@ export function MethodAdmin({ list }: { list: Method[] }) {
     setErr("");
   }
   function startEdit(m: Method) {
-    setForm({ ...m, exercise: m.exercise || "", tags: m.tags || "" });
+    setForm({ ...m, exercise: m.exercise || "", sources: m.sources || "", tags: m.tags || "" });
     setEditing(m.id);
     setErr("");
   }
@@ -78,6 +78,7 @@ export function MethodAdmin({ list }: { list: Method[] }) {
           <T label="案例" v={form.caseText} on={(v) => setForm({ ...form, caseText: v })} />
           <T label="怎么用" v={form.howToUse} on={(v) => setForm({ ...form, howToUse: v })} />
           <T label="练习题" v={form.exercise} on={(v) => setForm({ ...form, exercise: v })} />
+          <T label="参考来源（每行一条：《书名》作者）" v={form.sources} on={(v) => setForm({ ...form, sources: v })} />
           <F label="标签（逗号分隔）" v={form.tags} on={(v) => setForm({ ...form, tags: v })} w={300} />
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1rem" }}>
             <button className="btn btn-pri" onClick={save} disabled={busy}>{busy ? "保存中…" : "保存"}</button>

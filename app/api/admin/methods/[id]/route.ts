@@ -11,6 +11,7 @@ const schema = z.object({
   caseText: z.string().min(1).optional(),
   howToUse: z.string().min(1).optional(),
   exercise: z.string().optional(),
+  sources: z.string().optional(),
   tags: z.string().optional(),
   status: z.enum(["draft", "published"]).optional(),
   orderNo: z.number().optional(),
