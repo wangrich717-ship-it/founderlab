@@ -27,14 +27,27 @@ export default async function AdminUserDetail({ params }: { params: Promise<{ id
 
   const profileRows = profiles.map((p) => ({ id: p.id, email: user.email, nickname: user.nickname || "", createdAt: p.createdAt.toISOString(), model: p.model, contentMd: p.contentMd }));
 
+  const totalActivity = records.length + goals.length + exercises.length + insights.length + inspirations.length;
+
   return (
     <main style={{ padding: "2.5rem 2.4rem 4rem", maxWidth: 900 }}>
       <Link href="/admin/users" className="kicker" style={{ textDecoration: "none" }}>← 用户列表</Link>
-      <h1 className="font-serif-d" style={{ fontSize: "2rem", fontWeight: 700, margin: ".4rem 0 .2rem" }}>{user.email}</h1>
-      <p style={{ color: "var(--ink2)", fontSize: ".9rem", marginBottom: ".4rem" }}>
-        {user.nickname} · {user.role === "admin" ? "管理员" : "用户"} · {user.gender || "性别未填"} · {user.age ?? "年龄未填"}
-      </p>
-      {user.background && <p style={{ color: "var(--ink2)", fontSize: ".88rem", lineHeight: 1.7, marginBottom: "1rem" }}><strong>经历：</strong>{user.background}</p>}
+
+      {/* 用户概要卡 */}
+      <div className="card" style={{ padding: "1.5rem 1.7rem", margin: ".6rem 0 1.6rem" }}>
+        <h1 className="font-serif-d" style={{ fontSize: "1.9rem", fontWeight: 700, margin: "0 0 .3rem", wordBreak: "break-all" }}>{user.email}</h1>
+        <p style={{ color: "var(--ink2)", fontSize: ".9rem", marginBottom: user.background ? ".9rem" : 0 }}>
+          {user.nickname || "未设昵称"} · {user.role === "admin" ? "管理员" : "用户"} · {user.gender || "性别未填"} · {user.age ?? "年龄未填"} · 共 {totalActivity} 条内容
+        </p>
+        {user.background && (
+          <details style={{ borderTop: "1px solid var(--line)", paddingTop: ".9rem" }}>
+            <summary style={{ cursor: "pointer", fontSize: ".78rem", fontWeight: 800, color: "var(--muted)", letterSpacing: ".06em", textTransform: "uppercase", listStyle: "none" }}>
+              经历 / 背景（点击展开）
+            </summary>
+            <p style={{ color: "var(--ink2)", fontSize: ".88rem", lineHeight: 1.75, marginTop: ".7rem", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{user.background}</p>
+          </details>
+        )}
+      </div>
 
       <Section title="创业者画像" count={profiles.length}>
         <ProfileAdminList rows={profileRows} />

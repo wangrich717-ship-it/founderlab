@@ -6,6 +6,7 @@ import { recordTypeLabel } from "@/lib/labels";
 import { ModuleShell } from "@/components/module-shell";
 import { RecordFilter } from "@/components/record-filter";
 import { DeleteButton } from "@/components/delete-button";
+import { ProcessPending } from "@/components/process-pending";
 import { MoodFace, IconClip } from "@/components/icons";
 
 const WD = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
@@ -61,6 +62,7 @@ export default async function RecordsHistoryPage({ searchParams }: { searchParam
       back="/records"
       action={<Link href="/records" className="btn btn-pri">+ 写记录</Link>}
     >
+      <ProcessPending hasPending={records.some((r) => !r.aiProcessed)} />
       <RecordFilter type={type} date={date} />
 
       {records.length === 0 ? (

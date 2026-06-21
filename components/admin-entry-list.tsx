@@ -19,18 +19,20 @@ export function AdminEntryList({ items }: { items: AdminEntry[] }) {
   const [view, setView] = useState<AdminEntry | null>(null);
   if (!items.length) return null;
   return (
-    <div>
-      <div className="ledger">
-        {items.map((it) => (
-          <div key={it.id} className="ledger-cell" style={{ padding: "1rem 1.3rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: ".92rem", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.label}</p>
-              <p style={{ fontSize: ".72rem", color: "var(--muted)", marginTop: ".3rem" }}>{it.meta}</p>
-            </div>
-            <button onClick={() => setView(it)} style={btn}>查看</button>
+    <div style={{ display: "flex", flexDirection: "column", gap: ".7rem" }}>
+      {items.map((it) => (
+        <div
+          key={it.id}
+          className="card"
+          style={{ width: "100%", boxSizing: "border-box", overflow: "hidden", padding: "1rem 1.2rem", display: "flex", alignItems: "center", gap: "1rem" }}
+        >
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: ".92rem", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.label}</p>
+            <p style={{ fontSize: ".72rem", color: "var(--muted)", marginTop: ".3rem" }}>{it.meta}</p>
           </div>
-        ))}
-      </div>
+          <button onClick={() => setView(it)} style={btn}>查看</button>
+        </div>
+      ))}
 
       <Modal open={!!view} onClose={() => setView(null)} title={view?.title || ""} maxWidth={760}>
         {view && <EntryView entry={view} onClose={() => setView(null)} />}
