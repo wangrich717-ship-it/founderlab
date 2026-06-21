@@ -32,7 +32,7 @@ export function AiAccessCard({ admin, until }: { admin: boolean; until: string |
   }
 
   return (
-    <div className="card" style={{ padding: "1.5rem 1.6rem", marginBottom: "1.8rem" }}>
+    <div className="card" style={{ padding: "1.5rem 1.6rem", marginBottom: "1.8rem", maxWidth: 560 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap", marginBottom: ".4rem" }}>
         <p className="kicker">AI 使用权限</p>
         <span style={{ fontSize: ".8rem", fontWeight: 800, color: active ? "#3f7a52" : "var(--muted)" }}>
