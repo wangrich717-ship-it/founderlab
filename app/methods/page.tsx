@@ -44,7 +44,7 @@ export default async function MethodsPage() {
 
   return (
     <ModuleShell no="" en="Toolbox" title="工具箱" desc={`创业真实场景下的框架与心法。${methods.length} 张方法卡，挑你此刻用得上的。`} maxWidth={1160}>
-      <div className="tb-wrap">
+      <div className="tb-wrap" style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
         <MethodNav items={navItems} />
 
         <div style={{ flex: 1, minWidth: 0 }}>

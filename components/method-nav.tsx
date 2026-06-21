@@ -33,7 +33,6 @@ export function MethodNav({ items }: { items: Item[] }) {
   return (
     <nav className="tb-nav">
       <style>{`
-        .tb-wrap { display: flex; gap: 2rem; align-items: flex-start; }
         .tb-nav { position: sticky; top: 1.4rem; align-self: flex-start; width: 148px; flex-shrink: 0; }
         .tb-nav-title { font-size: .64rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 0 .6rem .5rem; }
         .tb-nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .12rem; }
@@ -42,7 +41,7 @@ export function MethodNav({ items }: { items: Item[] }) {
         .tb-nav a.on { color: var(--rose-deep); background: var(--rose-soft); border-left-color: var(--rose); }
         .tb-nav a .ct { font-size: .7rem; color: var(--muted); font-weight: 700; }
         @media (max-width: 820px) {
-          .tb-wrap { display: block; }
+          .tb-wrap { display: block !important; }
           .tb-nav { position: sticky; top: 0; width: auto; z-index: 5; background: var(--bg); margin: 0 -1.5rem 1rem; padding: .5rem 0; border-bottom: 1px solid var(--line); }
           .tb-nav-title { display: none; }
           .tb-nav ul { flex-direction: row; overflow-x: auto; gap: .3rem; padding: 0 1.5rem; }
