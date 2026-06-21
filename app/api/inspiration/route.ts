@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { callAI, getActivePrompt, AINotConfiguredError } from "@/lib/ai";
+import { getAiAccess, NO_AI_ACCESS_MESSAGE } from "@/lib/ai-access";
 import { INSPIRATION_MINE_PROMPT } from "@/lib/prompts-default";
 import { latestProfile, profileBlock, userInfoBlock } from "@/lib/context";
 
@@ -16,6 +17,10 @@ export const maxDuration = 60;
 export async function POST(req: Request) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 });
+
+  if (!(await getAiAccess(session.uid)).allowed) {
+    return NextResponse.json({ error: NO_AI_ACCESS_MESSAGE }, { status: 403 });
+  }
 
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {

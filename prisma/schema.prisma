@@ -24,8 +24,21 @@ model User {
   stage         String? // 创业阶段
   background    String? // 经历/背景描述（作为 AI 上下文）
   onboarded     Boolean  @default(false)
+  aiAccessUntil DateTime? // AI 使用权限有效期；null 或过期 = 无权限（管理员不受限）
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model RedeemCode {
+  id        String    @id @default(cuid())
+  code      String    @unique
+  days      Int // 兑换后获得的 AI 权限天数
+  note      String? // 备注（批次名等）
+  usedById  String? // 兑换者
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([usedById])
 }
 
 model EmailToken {
@@ -108,11 +121,13 @@ model Record {
   id        String   @id @default(cuid())
   userId    String
   projectId String?
-  type      String   @default("note") // note | decision | pitfall | comm
-  content   String
-  mood      String?
-  tags      String? // JSON string[]
-  createdAt DateTime @default(now())
+  type       String   @default("note") // note | decision | pitfall | comm | review（AI 可改写）
+  content    String
+  mood       String?
+  tags       String? // JSON string[]（用户手填）
+  keywords   String? // JSON { emotions:[], people:[], topics:[] }（AI 提取）
+  aiProcessed Boolean @default(false) // 是否已做过 AI 打标
+  createdAt  DateTime @default(now())
 
   @@index([userId])
   @@index([createdAt])

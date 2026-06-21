@@ -20,6 +20,7 @@ export default async function AdminUsersPage() {
             <tr style={{ textAlign: "left", color: "var(--muted)", fontSize: ".72rem", textTransform: "uppercase", letterSpacing: ".08em" }}>
               <Th>邮箱 / 昵称</Th>
               <Th>角色</Th>
+              <Th>AI 权限</Th>
               <Th>验证</Th>
               <Th>画像</Th>
               <Th>注册时间</Th>
@@ -36,11 +37,20 @@ export default async function AdminUsersPage() {
                 <Td>
                   <span style={{ fontWeight: 700, color: u.role === "admin" ? "var(--rose-deep)" : "var(--ink2)" }}>{u.role === "admin" ? "管理员" : "用户"}</span>
                 </Td>
+                <Td>
+                  {u.role === "admin" ? (
+                    <span style={{ color: "#3f7a52", fontWeight: 700, fontSize: ".8rem" }}>无限</span>
+                  ) : aiActive(u.aiAccessUntil) ? (
+                    <span style={{ color: "#3f7a52", fontWeight: 700, fontSize: ".8rem" }}>至 {u.aiAccessUntil!.toLocaleDateString("zh-CN")}</span>
+                  ) : (
+                    <span style={{ color: "var(--muted)", fontSize: ".8rem" }}>{u.aiAccessUntil ? "已过期" : "未开通"}</span>
+                  )}
+                </Td>
                 <Td>{u.emailVerified ? "✓" : <span style={{ color: "var(--muted)" }}>—</span>}</Td>
                 <Td>{cmap.get(u.id) || 0}</Td>
                 <Td style={{ color: "var(--ink2)", fontSize: ".8rem" }}>{u.createdAt.toLocaleDateString("zh-CN")}</Td>
                 <Td style={{ textAlign: "right" }}>
-                  <UserActions id={u.id} role={u.role} isSelf={admin?.id === u.id} />
+                  <UserActions id={u.id} role={u.role} isSelf={admin?.id === u.id} aiActive={aiActive(u.aiAccessUntil)} />
                 </Td>
               </tr>
             ))}
@@ -49,6 +59,10 @@ export default async function AdminUsersPage() {
       </div>
     </main>
   );
+}
+
+function aiActive(until: Date | null) {
+  return !!until && until.getTime() > Date.now();
 }
 
 function Th({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {

@@ -11,6 +11,7 @@ const TYPE_LABEL: Record<string, string> = {
   idea_cluster: "连点成线",
   method_exercise: "方法练习反馈",
   review_assist: "复盘辅助",
+  record_tag: "记录自动打标",
 };
 
 type Log = { id: string; type: string; email: string; model: string; ok: boolean; input: string | null; output: string | null; error: string | null; createdAt: string };

@@ -3,7 +3,11 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getAdmin } from "@/lib/auth";
 
-const schema = z.object({ role: z.enum(["user", "admin"]) });
+const schema = z.object({
+  role: z.enum(["user", "admin"]).optional(),
+  aiDays: z.number().int().optional(), // 在当前有效期基础上增加的天数（正数）
+  aiRevoke: z.boolean().optional(), // true = 立即收回 AI 权限
+});
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const admin = await getAdmin();
@@ -11,11 +15,30 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const { id } = await params;
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "参数错误" }, { status: 400 });
+  const { role, aiDays, aiRevoke } = parsed.data;
 
-  if (id === admin.id && parsed.data.role !== "admin") {
-    return NextResponse.json({ error: "不能取消自己的管理员权限" }, { status: 400 });
+  const data: { role?: string; aiAccessUntil?: Date | null } = {};
+
+  if (role) {
+    if (id === admin.id && role !== "admin") {
+      return NextResponse.json({ error: "不能取消自己的管理员权限" }, { status: 400 });
+    }
+    data.role = role;
   }
-  await prisma.user.update({ where: { id }, data: { role: parsed.data.role } });
+
+  if (aiRevoke) {
+    data.aiAccessUntil = null;
+  } else if (aiDays && aiDays > 0) {
+    const u = await prisma.user.findUnique({ where: { id }, select: { aiAccessUntil: true } });
+    const base = u?.aiAccessUntil && u.aiAccessUntil.getTime() > Date.now() ? u.aiAccessUntil.getTime() : Date.now();
+    data.aiAccessUntil = new Date(base + aiDays * 86400000);
+  }
+
+  if (Object.keys(data).length === 0) {
+    return NextResponse.json({ error: "无可更新的字段" }, { status: 400 });
+  }
+
+  await prisma.user.update({ where: { id }, data });
   return NextResponse.json({ ok: true });
 }
 

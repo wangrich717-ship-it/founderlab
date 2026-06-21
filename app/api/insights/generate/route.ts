@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { callAI, getActivePrompt, AINotConfiguredError } from "@/lib/ai";
+import { getAiAccess, NO_AI_ACCESS_MESSAGE } from "@/lib/ai-access";
 import { INSIGHT_PROMPT } from "@/lib/prompts-default";
 import { latestProfile, profileBlock, recordsBlock, userInfoBlock } from "@/lib/context";
 
@@ -11,6 +12,10 @@ export async function POST() {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 });
   const uid = session.uid;
+
+  if (!(await getAiAccess(uid)).allowed) {
+    return NextResponse.json({ error: NO_AI_ACCESS_MESSAGE }, { status: 403 });
+  }
 
   // 水位线：上一次洞察的生成时间。之后产生的才算「新内容」。
   const lastInsight = await prisma.insight.findFirst({

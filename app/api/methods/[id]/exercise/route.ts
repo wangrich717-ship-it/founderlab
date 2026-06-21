@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { callAI, getActivePrompt, AINotConfiguredError } from "@/lib/ai";
+import { getAiAccess, NO_AI_ACCESS_MESSAGE } from "@/lib/ai-access";
 import { METHOD_EXERCISE_PROMPT } from "@/lib/prompts-default";
 import { latestProfile, profileBlock, userInfoBlock } from "@/lib/context";
 
@@ -14,6 +15,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 });
   const { id } = await params;
+
+  if (!(await getAiAccess(session.uid)).allowed) {
+    return NextResponse.json({ error: NO_AI_ACCESS_MESSAGE }, { status: 403 });
+  }
 
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {

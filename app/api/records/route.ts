@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { getAiAccess } from "@/lib/ai-access";
+import { tagRecord } from "@/lib/record-tag";
 
 const schema = z.object({
   type: z.enum(["note", "decision", "pitfall", "comm", "review"]),
@@ -9,6 +11,8 @@ const schema = z.object({
   mood: z.string().optional(),
   tags: z.array(z.string()).optional(),
 });
+
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const session = await getSession();
@@ -32,5 +36,12 @@ export async function POST(req: Request) {
       tags: tags && tags.length ? JSON.stringify(tags) : null,
     },
   });
+
+  // 有 AI 权限时，后台自动归类 + 提取关键词（不阻塞保存响应）
+  const access = await getAiAccess(session.uid);
+  if (access.allowed) {
+    after(() => tagRecord(rec.id));
+  }
+
   return NextResponse.json({ ok: true, id: rec.id });
 }

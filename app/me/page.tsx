@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { ModuleShell } from "@/components/module-shell";
 import { ProfileForm } from "@/components/profile-form";
+import { AiAccessCard } from "@/components/ai-access-card";
 
 export default async function MePage() {
   const user = await getCurrentUser();
@@ -9,6 +10,7 @@ export default async function MePage() {
 
   return (
     <ModuleShell no="" en="Account" title="个人中心" desc="完善你的资料；这些信息会作为 AI 分析你的背景。">
+      <AiAccessCard admin={user.role === "admin"} until={user.aiAccessUntil ? user.aiAccessUntil.toISOString() : null} />
       <ProfileForm
         init={{
           nickname: user.nickname || "",

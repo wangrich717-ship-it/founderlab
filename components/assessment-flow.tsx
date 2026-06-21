@@ -13,11 +13,49 @@ export function AssessmentFlow({ questions }: { questions: Q[] }) {
   const [phase, setPhase] = useState<"intro" | "q" | "info" | "submitting">("intro");
   const [info, setInfo] = useState({ gender: "", age: "", extra: "" });
   const [err, setErr] = useState("");
+  const [restored, setRestored] = useState(false);
   const taRef = useRef<HTMLTextAreaElement>(null);
+
+  const DRAFT_KEY = "assessment-draft-v1";
 
   useEffect(() => {
     if (phase === "q") taRef.current?.focus();
   }, [idx, phase]);
+
+  // 进入页面时恢复上次未提交的草稿
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.answers) setAnswers(d.answers);
+        if (d.info) setInfo(d.info);
+        if (typeof d.idx === "number" && d.idx < total) setIdx(d.idx);
+        if (Object.keys(d.answers || {}).length > 0) setRestored(true);
+      }
+    } catch {
+      /* 忽略损坏的草稿 */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 边填边缓存（仅缓存未提交分析的内容）
+  useEffect(() => {
+    if (phase === "submitting") return;
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ answers, info, idx }));
+    } catch {
+      /* localStorage 不可用时忽略 */
+    }
+  }, [answers, info, idx, phase]);
+
+  function clearDraft() {
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* 忽略 */
+    }
+  }
 
   const q = questions[idx];
   const isLast = idx === total - 1;
@@ -50,6 +88,7 @@ export function AssessmentFlow({ questions }: { questions: Q[] }) {
       setPhase("info");
       return;
     }
+    clearDraft(); // 已完成 AI 分析，清掉草稿缓存
     window.location.href = `/profile/${data.profileId}`;
   }
 
@@ -69,8 +108,15 @@ export function AssessmentFlow({ questions }: { questions: Q[] }) {
           覆盖动机、经历、专业、优势、价值观、决策、资源、协作与能量等维度。
           答完后 AI 会为你生成专属的「创业者画像」。
         </p>
+        {restored && (
+          <p style={{ fontSize: ".85rem", color: "var(--rose-deep)", marginBottom: "1rem" }}>
+            已为你恢复上次未完成的填写，可继续作答。
+          </p>
+        )}
         <div style={{ display: "flex", gap: "1rem" }}>
-          <button className="btn btn-pri" onClick={() => setPhase("q")} style={{ padding: "1.05rem 2.6rem", fontSize: "1.1rem", borderRadius: 999 }}>开始测评 →</button>
+          <button className="btn btn-pri" onClick={() => setPhase("q")} style={{ padding: "1.05rem 2.6rem", fontSize: "1.1rem", borderRadius: 999 }}>
+            {restored ? "继续测评 →" : "开始测评 →"}
+          </button>
         </div>
       </Stage>
       </div>

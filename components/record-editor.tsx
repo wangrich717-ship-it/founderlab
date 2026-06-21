@@ -6,6 +6,14 @@ import { RECORD_TYPES, MOOD_LEVELS } from "@/lib/labels";
 import { MoodFace } from "./icons";
 
 const REVIEW_TEMPLATE = "做成了什么：\n\n没做成什么：\n\n学到了什么：\n\n下一步：\n";
+
+// 记录格式模板
+const TEMPLATES: { label: string; type: string; text: string }[] = [
+  { label: "人物·事件", type: "comm", text: "时间：\n人物：\n发生了什么：\n我的想法：\n情绪 / 认知：\n" },
+  { label: "一次决策", type: "decision", text: "要决定的事：\n可选项：\n我的选择：\n理由：\n" },
+  { label: "踩了个坑", type: "pitfall", text: "发生了什么：\n根本原因：\n下次怎么避免：\n" },
+  { label: "复盘", type: "review", text: REVIEW_TEMPLATE },
+];
 const WD = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
 export function RecordEditor() {
@@ -31,7 +39,13 @@ export function RecordEditor() {
     const d = await res.json().catch(() => ({}));
     setLoading(false);
     if (!res.ok) return setErr(d.error || "保存失败");
-    router.push("/records");
+    router.push("/records/history");
+  }
+
+  function applyTemplate(t: { type: string; text: string }) {
+    if (content.trim() && !confirm("用模板替换当前内容？")) return;
+    setType(t.type);
+    setContent(t.text);
   }
 
   return (
@@ -51,6 +65,20 @@ export function RecordEditor() {
       </div>
 
       <div style={{ padding: "1.3rem 1.6rem 1.6rem" }}>
+        {/* 套用格式模板 */}
+        <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap", alignItems: "center", marginBottom: "1rem" }}>
+          <span style={{ fontSize: ".72rem", color: "var(--muted)", fontWeight: 700 }}>模板</span>
+          {TEMPLATES.map((t) => (
+            <button
+              key={t.label}
+              onClick={() => applyTemplate(t)}
+              style={{ padding: ".28rem .8rem", borderRadius: 999, border: "1px dashed var(--line)", background: "transparent", color: "var(--ink2)", fontWeight: 700, fontSize: ".78rem", cursor: "pointer" }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
         <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap", marginBottom: "1.1rem" }}>
           {RECORD_TYPES.map((t) => (
             <button
@@ -119,7 +147,7 @@ export function RecordEditor() {
           </div>
           {err && <span style={{ color: "var(--danger)", fontSize: ".85rem" }}>{err}</span>}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <button className="btn" onClick={() => router.push("/records")}>取消</button>
+            <button className="btn" onClick={() => router.push("/dashboard")}>取消</button>
             <button className="btn btn-pri" onClick={save} disabled={loading || !content.trim()}>{loading ? "保存中…" : "保存"}</button>
           </div>
         </div>

@@ -7,6 +7,7 @@ import { LogoutButton } from "./logout-button";
 const LINKS = [
   { href: "/admin", label: "概览", en: "Overview" },
   { href: "/admin/users", label: "用户", en: "Users" },
+  { href: "/admin/redeem", label: "兑换码", en: "Redeem" },
   { href: "/admin/ai-history", label: "AI 历史", en: "AI History" },
   { href: "/admin/questions", label: "测评题", en: "Assessment" },
   { href: "/admin/methods", label: "方法卡", en: "Toolbox" },

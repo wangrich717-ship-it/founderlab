@@ -7,6 +7,7 @@ import {
   INSPIRATION_MINE_PROMPT,
   IDEA_CLUSTER_PROMPT,
   METHOD_EXERCISE_PROMPT,
+  RECORD_TAG_PROMPT,
 } from "./prompts-default";
 
 const DEFAULT_PROMPTS: Record<string, string> = {
@@ -16,6 +17,7 @@ const DEFAULT_PROMPTS: Record<string, string> = {
   inspiration_mine: INSPIRATION_MINE_PROMPT,
   idea_cluster: IDEA_CLUSTER_PROMPT,
   method_exercise: METHOD_EXERCISE_PROMPT,
+  record_tag: RECORD_TAG_PROMPT,
 };
 
 type Msg = { role: "system" | "user" | "assistant"; content: string };
