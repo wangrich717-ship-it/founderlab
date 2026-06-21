@@ -57,7 +57,7 @@ export default async function MethodsPage() {
                   <span style={{ fontSize: ".75rem", color: "var(--muted)", fontWeight: 700 }}>{list.length}</span>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.1rem" }}>
+                <div className="tb-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1.1rem" }}>
                   {list.map((m) => (
                     <Link key={m.id} href={`/methods/${m.id}`} className="card card-link" style={{ padding: "1.6rem 1.6rem 1.4rem", display: "flex", flexDirection: "column", textDecoration: "none", color: "var(--ink)" }}>
                       <span style={{ alignSelf: "flex-start", fontSize: ".64rem", fontWeight: 800, letterSpacing: ".12em", textTransform: "uppercase", color: "var(--rose-deep)", background: "var(--rose-soft)", padding: ".25rem .7rem", borderRadius: 999, marginBottom: ".85rem" }}>

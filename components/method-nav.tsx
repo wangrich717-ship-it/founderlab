@@ -41,13 +41,12 @@ export function MethodNav({ items }: { items: Item[] }) {
         .tb-nav a.on { color: var(--rose-deep); background: var(--rose-soft); border-left-color: var(--rose); }
         .tb-nav a .ct { font-size: .7rem; color: var(--muted); font-weight: 700; }
         @media (max-width: 820px) {
-          .tb-wrap { display: block !important; }
-          .tb-nav { position: sticky; top: 0; width: auto; z-index: 5; background: var(--bg); margin: 0 -1.5rem 1rem; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+          .tb-wrap { gap: .9rem !important; }
+          .tb-nav { top: .8rem; width: 84px; }
           .tb-nav-title { display: none; }
-          .tb-nav ul { flex-direction: row; overflow-x: auto; gap: .3rem; padding: 0 1.5rem; }
-          .tb-nav a { white-space: nowrap; border-left: none; border-bottom: 2px solid transparent; padding: .35rem .7rem; }
-          .tb-nav a.on { border-left: none; border-bottom-color: var(--rose); }
+          .tb-nav a { padding: .4rem .5rem; font-size: .8rem; border-left-width: 2px; }
           .tb-nav a .ct { display: none; }
+          .tb-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
       <p className="tb-nav-title">目录</p>
