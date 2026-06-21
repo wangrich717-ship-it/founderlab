@@ -6,6 +6,7 @@ import {
   INSPIRATION_MINE_PROMPT,
   IDEA_CLUSTER_PROMPT,
   METHOD_EXERCISE_PROMPT,
+  RECORD_TAG_PROMPT,
 } from "../lib/prompts-default";
 import { METHODS } from "./methods-data";
 import { INSPIRATION_PROMPTS } from "./inspiration-data";
@@ -14,11 +15,22 @@ import { QUESTIONS } from "./questions-data";
 const prisma = new PrismaClient();
 
 
-async function upsertPrompt(key: string, content: string) {
-  const exists = await prisma.prompt.findFirst({ where: { key, version: 1 } });
-  if (!exists) {
+// 同步提示词：DB 没有则创建；代码默认值变了则升一个新版本并启用（旧版本停用）。
+// 幂等：内容与最新版一致时不做任何改动。
+async function syncPrompt(key: string, content: string) {
+  const latest = await prisma.prompt.findFirst({ where: { key }, orderBy: { version: "desc" } });
+  if (!latest) {
     await prisma.prompt.create({ data: { key, version: 1, content, active: true } });
+    console.log(`  · ${key} 初始化`);
+    return;
   }
+  if (latest.content === content) {
+    if (!latest.active) await prisma.prompt.update({ where: { id: latest.id }, data: { active: true } });
+    return;
+  }
+  await prisma.prompt.updateMany({ where: { key }, data: { active: false } });
+  await prisma.prompt.create({ data: { key, version: latest.version + 1, content, active: true } });
+  console.log(`  · ${key} 升级到 v${latest.version + 1}`);
 }
 
 async function main() {
@@ -40,13 +52,14 @@ async function main() {
     console.log(`✓ 方法卡 ${METHODS.length} 条`);
   }
 
-  await upsertPrompt("profile_report", PROFILE_REPORT_PROMPT);
-  await upsertPrompt("review_assist", REVIEW_ASSIST_PROMPT);
-  await upsertPrompt("insight", INSIGHT_PROMPT);
-  await upsertPrompt("inspiration_mine", INSPIRATION_MINE_PROMPT);
-  await upsertPrompt("idea_cluster", IDEA_CLUSTER_PROMPT);
-  await upsertPrompt("method_exercise", METHOD_EXERCISE_PROMPT);
-  console.log("✓ AI 提示词已就绪");
+  await syncPrompt("profile_report", PROFILE_REPORT_PROMPT);
+  await syncPrompt("review_assist", REVIEW_ASSIST_PROMPT);
+  await syncPrompt("insight", INSIGHT_PROMPT);
+  await syncPrompt("inspiration_mine", INSPIRATION_MINE_PROMPT);
+  await syncPrompt("idea_cluster", IDEA_CLUSTER_PROMPT);
+  await syncPrompt("method_exercise", METHOD_EXERCISE_PROMPT);
+  await syncPrompt("record_tag", RECORD_TAG_PROMPT);
+  console.log("✓ AI 提示词已同步");
 
   console.log("种子数据完成。");
 }
