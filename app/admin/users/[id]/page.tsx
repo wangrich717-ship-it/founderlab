@@ -3,6 +3,11 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { recordTypeLabel } from "@/lib/labels";
 import { ProfileAdminList } from "@/components/profile-admin";
+import { AdminEntryList } from "@/components/admin-entry-list";
+
+function clip(s: string, n = 80) {
+  return s.length > n ? s.slice(0, n) + "…" : s;
+}
 
 export default async function AdminUserDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -36,23 +41,23 @@ export default async function AdminUserDetail({ params }: { params: Promise<{ id
       </Section>
 
       <Section title="目标" count={goals.length}>
-        <List items={goals.map((g) => ({ key: g.id, main: g.title, sub: `${g.status} · ${g.createdAt.toLocaleDateString("zh-CN")}`, body: g.detail }))} />
+        <AdminEntryList items={goals.map((g) => ({ id: g.id, title: g.title, label: g.title, plain: g.detail || g.title, ai: null, meta: `${g.status} · ${g.createdAt.toLocaleDateString("zh-CN")}` }))} />
       </Section>
 
       <Section title="记录" count={records.length}>
-        <List items={records.map((r) => ({ key: r.id, main: `[${recordTypeLabel(r.type)}] ${r.content}`, sub: r.createdAt.toLocaleString("zh-CN") }))} />
+        <AdminEntryList items={records.map((r) => ({ id: r.id, title: `${recordTypeLabel(r.type)} · 记录`, label: `[${recordTypeLabel(r.type)}] ${clip(r.content)}`, plain: r.content, ai: null, meta: r.createdAt.toLocaleString("zh-CN") }))} />
       </Section>
 
       <Section title="方法练习" count={exercises.length}>
-        <List items={exercises.map((e) => ({ key: e.id, main: `[${mTitle.get(e.methodId) || "练习"}] ${e.response}`, sub: e.createdAt.toLocaleString("zh-CN"), body: e.aiFeedback }))} />
+        <AdminEntryList items={exercises.map((e) => ({ id: e.id, kind: "exercise" as const, title: `${mTitle.get(e.methodId) || "练习"} · 反馈`, label: `[${mTitle.get(e.methodId) || "练习"}] ${clip(e.response)}`, plain: e.response, ai: e.aiFeedback, meta: e.createdAt.toLocaleString("zh-CN") }))} />
       </Section>
 
       <Section title="洞察盘点" count={insights.length}>
-        <List items={insights.map((i) => ({ key: i.id, main: i.content.slice(0, 120) + (i.content.length > 120 ? "…" : ""), sub: `${i.type} · ${i.createdAt.toLocaleString("zh-CN")}` }))} />
+        <AdminEntryList items={insights.map((i) => ({ id: i.id, kind: "insight" as const, title: i.type === "idea_cluster" ? "连点成线" : "盘点", label: clip(i.content.replace(/[#*\n]/g, " ").trim(), 90), plain: null, ai: i.content, meta: `${i.type} · ${i.createdAt.toLocaleString("zh-CN")}` }))} />
       </Section>
 
       <Section title="灵感" count={inspirations.length}>
-        <List items={inspirations.map((i) => ({ key: i.id, main: i.rawText, sub: `${i.status} · ${i.createdAt.toLocaleDateString("zh-CN")}`, body: i.aiAngle }))} />
+        <AdminEntryList items={inspirations.map((i) => ({ id: i.id, kind: "inspiration" as const, title: clip(i.rawText, 40), label: clip(i.rawText), plain: i.rawText, ai: i.aiAngle, meta: `${i.status} · ${i.createdAt.toLocaleDateString("zh-CN")}` }))} />
       </Section>
     </main>
   );
@@ -70,16 +75,3 @@ function Section({ title, count, children }: { title: string; count: number; chi
   );
 }
 
-function List({ items }: { items: { key: string; main: string; sub: string; body?: string | null }[] }) {
-  return (
-    <div className="ledger">
-      {items.map((it) => (
-        <div key={it.key} className="ledger-cell" style={{ padding: "1rem 1.3rem" }}>
-          <p style={{ fontSize: ".92rem", lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{it.main}</p>
-          {it.body && <p style={{ fontSize: ".82rem", color: "var(--ink2)", lineHeight: 1.6, marginTop: ".4rem", whiteSpace: "pre-wrap" }}>{it.body.slice(0, 200)}{it.body.length > 200 ? "…" : ""}</p>}
-          <p style={{ fontSize: ".72rem", color: "var(--muted)", marginTop: ".4rem" }}>{it.sub}</p>
-        </div>
-      ))}
-    </div>
-  );
-}

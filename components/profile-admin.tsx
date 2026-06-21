@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Modal } from "./modal";
+import { mdToHtml } from "@/lib/markdown";
 
 type Row = { id: string; email: string; nickname: string; createdAt: string; model: string; contentMd: string };
 
@@ -18,7 +20,8 @@ export function ProfileAdminList({ rows }: { rows: Row[] }) {
 
 function ProfileRow({ r }: { r: Row }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [viewing, setViewing] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(r.contentMd);
   const [busy, setBusy] = useState("");
   const [msg, setMsg] = useState("");
@@ -56,18 +59,24 @@ function ProfileRow({ r }: { r: Row }) {
         </div>
         <div style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
           {msg && <span style={{ fontSize: ".8rem", color: "var(--rose-deep)", fontWeight: 700 }}>{msg}</span>}
-          <button onClick={() => setOpen((o) => !o)} style={btn}>{open ? "收起" : "查看 / 编辑"}</button>
+          <button onClick={() => setViewing(true)} style={btn}>查看</button>
+          <button onClick={() => setEditing((e) => !e)} style={btn}>{editing ? "收起编辑" : "编辑"}</button>
           <button onClick={regenerate} disabled={!!busy} style={btn}>{busy === "regen" ? "生成中…" : "重新生成"}</button>
           <button onClick={del} disabled={!!busy} style={{ ...btn, color: "var(--danger)", borderColor: "rgba(192,88,74,.4)" }}>删除</button>
         </div>
       </div>
 
-      {open && (
+      {editing && (
         <div style={{ marginTop: "1rem" }}>
           <textarea className="field-input" value={content} onChange={(e) => setContent(e.target.value)} rows={14} style={{ fontFamily: "var(--fsans)", lineHeight: 1.7, resize: "vertical" }} />
           <button className="btn btn-pri" onClick={save} disabled={!!busy} style={{ marginTop: ".7rem" }}>{busy === "save" ? "保存中…" : "保存修改"}</button>
         </div>
       )}
+
+      <Modal open={viewing} onClose={() => setViewing(false)} title="创业者画像" maxWidth={760}>
+        <div style={{ marginBottom: "1rem", fontSize: ".8rem", color: "var(--muted)" }}>{r.email} · {new Date(r.createdAt).toLocaleString("zh-CN")} · {r.model}</div>
+        <div className="prose-report" style={{ background: "var(--bg)", borderRadius: 10, padding: "1rem 1.1rem", maxHeight: 460, overflowY: "auto" }} dangerouslySetInnerHTML={{ __html: mdToHtml(content) }} />
+      </Modal>
     </div>
   );
 }
