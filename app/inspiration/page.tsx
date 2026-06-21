@@ -1,11 +1,12 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { mdToHtml } from "@/lib/markdown";
 import { ModuleShell, BackToDash } from "@/components/module-shell";
 import { InspirationComposer } from "@/components/inspiration-composer";
-import { InspirationStatus } from "@/components/inspiration-status";
 import { GenerateButton } from "@/components/generate-button";
+import { IconArrowRight } from "@/components/icons";
+import { inspirationStatusLabel } from "@/lib/labels";
 
 export default async function InspirationPage() {
   const session = await getSession();
@@ -27,32 +28,40 @@ export default async function InspirationPage() {
       en="Inspiration"
       title="灵感"
       desc="好点子常常藏在日常里。答一个小问题，AI 结合你的画像，帮你从中挖出机会。"
-      action={<GenerateButton url="/api/inspiration/cluster" label="连点成线" loadingLabel="连接中…" />}
+      action={<GenerateButton url="/api/inspiration/cluster" label="连点成线" loadingLabel="连接中…" redirectPrefix="/insights" />}
     >
       <InspirationComposer promptId={todays?.id ?? null} promptText={todays?.text ?? "此刻冒出什么灵感？"} />
 
-      <p className="kicker" style={{ marginBottom: "1rem" }}>灵感库</p>
+      <p className="kicker" style={{ marginBottom: "1rem" }}>灵感库 · {inspirations.length}</p>
       {inspirations.length === 0 ? (
         <p style={{ color: "var(--txt2)", fontSize: ".95rem" }}>还没有灵感。从上面答一题开始吧。</p>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: ".9rem" }}>
           {inspirations.map((it) => (
-            <article key={it.id} className="card" style={{ padding: "1.5rem 1.6rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", marginBottom: ".6rem", flexWrap: "wrap" }}>
-                <span className="kicker">
-                  {it.source === "prompt" ? "今日小问" : "随手记"} · {it.createdAt.toLocaleDateString("zh-CN")}
-                </span>
-                <InspirationStatus id={it.id} status={it.status} />
-              </div>
-              <p style={{ fontSize: "1.05rem", lineHeight: 1.7, whiteSpace: "pre-wrap", marginBottom: it.aiAngle ? "1rem" : 0 }}>
-                {it.rawText}
-              </p>
-              {it.aiAngle && (
-                <div style={{ borderTop: "1px solid var(--ink-line)", paddingTop: "1rem" }}>
-                  <div className="prose-report" dangerouslySetInnerHTML={{ __html: mdToHtml(it.aiAngle) }} />
+            <Link
+              key={it.id}
+              href={`/inspiration/${it.id}`}
+              className="card"
+              style={{ padding: "1.2rem 1.4rem", textDecoration: "none", color: "inherit", display: "flex", alignItems: "center", gap: "1rem" }}
+            >
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".55rem", marginBottom: ".4rem", flexWrap: "wrap" }}>
+                  <span className="kicker">
+                    {it.source === "prompt" ? "今日小问" : "随手记"} · {it.createdAt.toLocaleDateString("zh-CN")}
+                  </span>
+                  <span style={{ fontSize: ".68rem", fontWeight: 700, color: "var(--chestnut)", background: "var(--rose-soft)", padding: ".1rem .55rem", borderRadius: 999 }}>
+                    {inspirationStatusLabel(it.status)}
+                  </span>
+                  {it.aiAngle && (
+                    <span style={{ fontSize: ".68rem", fontWeight: 700, color: "var(--muted)" }}>· 已挖掘</span>
+                  )}
                 </div>
-              )}
-            </article>
+                <p style={{ fontSize: ".98rem", color: "var(--ink)", lineHeight: 1.6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {it.rawText}
+                </p>
+              </div>
+              <span style={{ flexShrink: 0, color: "var(--muted)" }}><IconArrowRight size={18} /></span>
+            </Link>
           ))}
         </div>
       )}

@@ -7,10 +7,12 @@ export function GenerateButton({
   url,
   label,
   loadingLabel,
+  redirectPrefix,
 }: {
   url: string;
   label: string;
   loadingLabel: string;
+  redirectPrefix?: string;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -32,7 +34,11 @@ export function GenerateButton({
       setErr(d.error || "生成失败");
       return;
     }
-    router.refresh();
+    if (redirectPrefix && d.id) {
+      router.push(`${redirectPrefix}/${d.id}`);
+    } else {
+      router.refresh();
+    }
   }
 
   return (

@@ -32,7 +32,8 @@ export function InspirationComposer({
       return;
     }
     setRawText("");
-    router.refresh();
+    if (d.id) router.push(`/inspiration/${d.id}`);
+    else router.refresh();
   }
 
   return (

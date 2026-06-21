@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { mdToHtml } from "@/lib/markdown";
+import { IconArrowRight } from "@/components/icons";
 
 type Past = { id: string; response: string; aiFeedback: string | null; createdAt: string };
 
@@ -28,7 +29,8 @@ export function MethodExercise({ methodId, exercise, past }: { methodId: string;
       return;
     }
     setResponse("");
-    router.refresh();
+    if (d.id) router.push(`/exercises/${d.id}`);
+    else router.refresh();
   }
 
   return (
@@ -55,20 +57,25 @@ export function MethodExercise({ methodId, exercise, past }: { methodId: string;
       {past.length > 0 && (
         <div style={{ marginTop: "2rem" }}>
           <p className="kicker" style={{ marginBottom: "1rem" }}>我的练习记录 · {past.length}</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: ".9rem" }}>
             {past.map((p) => (
-              <div key={p.id} className="card" style={{ padding: "1.4rem 1.6rem" }}>
-                <p style={{ fontSize: ".68rem", fontWeight: 800, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--muted)", marginBottom: ".4rem" }}>
-                  我的作答 · {new Date(p.createdAt).toLocaleString("zh-CN")}
-                </p>
-                <p style={{ whiteSpace: "pre-wrap", lineHeight: 1.7, marginBottom: p.aiFeedback ? "1.1rem" : 0 }}>{p.response}</p>
-                {p.aiFeedback && (
-                  <div style={{ borderTop: "1px solid var(--line)", paddingTop: "1.1rem" }}>
-                    <p className="kicker" style={{ marginBottom: ".5rem" }}>AI 反馈</p>
-                    <div className="prose-report" dangerouslySetInnerHTML={{ __html: mdToHtml(p.aiFeedback) }} />
+              <Link
+                key={p.id}
+                href={`/exercises/${p.id}`}
+                className="card"
+                style={{ padding: "1.2rem 1.4rem", textDecoration: "none", color: "inherit", display: "flex", alignItems: "center", gap: "1rem" }}
+              >
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: ".55rem", marginBottom: ".4rem" }}>
+                    <span className="kicker">{new Date(p.createdAt).toLocaleDateString("zh-CN")}</span>
+                    {p.aiFeedback && <span style={{ fontSize: ".68rem", fontWeight: 700, color: "var(--muted)" }}>· 有 AI 反馈</span>}
                   </div>
-                )}
-              </div>
+                  <p style={{ fontSize: ".98rem", color: "var(--ink)", lineHeight: 1.6, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {p.response}
+                  </p>
+                </div>
+                <span style={{ flexShrink: 0, color: "var(--muted)" }}><IconArrowRight size={18} /></span>
+              </Link>
             ))}
           </div>
         </div>

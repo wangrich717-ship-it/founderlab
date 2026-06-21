@@ -51,7 +51,7 @@ export async function POST() {
   }
 
   // 连点成线的结果沉淀进「洞察」feed
-  await prisma.insight.create({
+  const insight = await prisma.insight.create({
     data: {
       userId: session.uid,
       type: "idea_cluster",
@@ -60,5 +60,5 @@ export async function POST() {
       status: "unread",
     },
   });
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, id: insight.id });
 }
